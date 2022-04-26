@@ -10,6 +10,7 @@ class OfferActualizer:
         self._db_manager = DatabaseManager("offers")
 
     def actualize_offers(self, offers: "list[AppartmentOffer]") -> None:
+        print("Actualizing offer...")
         for offer in offers:
             self._actualize_offer(offer)
 

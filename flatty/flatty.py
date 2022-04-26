@@ -13,10 +13,8 @@ def get_offers_for_city(city: str) -> None:
 
     scraper = NieruchomosciOnlineScraper()
     data = scraper.scrape_offers("Rybnik")
-    print("Found offers:\n")
-    for index, offer in enumerate(data):
-        print(f"{index + 1}.", offer)
-
-    print("Testing saving documents...")
+    # print("Found offers:\n")
+    # for index, offer in enumerate(data):
+    #     print(f"{index + 1}.", offer)
 
     offer_actualizer.actualize_offers(data)

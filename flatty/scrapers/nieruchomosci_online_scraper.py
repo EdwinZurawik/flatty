@@ -13,24 +13,39 @@ __all__ = ["NieruchomosciOnlineScraper"]
 
 class NieruchomosciOnlineScraper(BaseOfferScraper):
     def scrape_offers(self, city: str) -> "list[AppartmentOffer]":
-        url = (
-            "https://www.nieruchomosci-online.pl/szukaj.html?"
-            f"3,mieszkanie,sprzedaz,,{city}"
-        )
-        links = self.get_offer_links_from_page(self.get_page_soup(url))
+        page_empty = False
+        page_number = 1
+        offers = []
+        while not page_empty:
+            url = (
+                "https://www.nieruchomosci-online.pl/szukaj.html?"
+                f"3,mieszkanie,sprzedaz,,{city}&p={page_number}"
+            )
+            offer_links = self.get_offer_links_from_page(self.get_page_soup(url))
+            if not offer_links:
+                page_empty = True
+                print(f"Page {page_number} is empty. Stopping...")
+                continue
+            print(f"Getting offers from page {page_number}...")
+            offers_from_page = self.scrape_offers_from_page(offer_links, city)
+            offers.extend(offers_from_page)
+            page_number += 1
+        return offers
 
+    def scrape_offers_from_page(
+        self, links: "list[str]", city: str
+    ) -> "list[AppartmentOffer]":
         data = []
+        offers = []
         for link in links:
-            time.sleep(2)
-            if len(data) >= 3:
-                break
+            time.sleep(1)
             base_data = {
                 "city": city,
                 "url": link,
             }
             offer_data = self.get_offer_data(self.get_page_soup(link))
             if offer_data:
-                print(f"Collected data for {offer_data['name']}...")
+                # print(f"Collected data for {offer_data['name']}...")
                 data.append({**offer_data, **base_data})
 
         offers = [
@@ -54,7 +69,7 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
         data_list = [area, price, number_of_rooms, name, floor]
 
         if not all(data_list):
-            print(f"{name.text} - data missing...")
+            # print(f"{name.text} - data missing...")
             return None
         area = self.clean_number_data(area.text)
         price = self.clean_number_data(price.text)
