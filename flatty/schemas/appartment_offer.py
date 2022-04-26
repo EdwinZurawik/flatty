@@ -3,9 +3,10 @@ from marshmallow import (
     fields,
     post_load,
 )
+
 from flatty.models.appartment_offer import AppartmentOffer
-from flatty.schemas.price import PriceSchema
 from flatty.schemas.custom_fields import ObjectId
+from flatty.schemas.price import PriceSchema
 
 __all__ = ["AppartmentOfferSchema"]
 

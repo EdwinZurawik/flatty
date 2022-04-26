@@ -1,6 +1,7 @@
 import argparse
 
 from dotenv import load_dotenv
+
 from flatty import get_offers_for_city
 
 __all__ = ["get_offers_for_city"]

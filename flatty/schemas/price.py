@@ -3,6 +3,7 @@ from marshmallow import (
     fields,
     post_load,
 )
+
 from flatty.models.price import Price
 
 __all__ = ["PriceSchema"]

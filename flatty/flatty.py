@@ -1,8 +1,10 @@
 from dotenv import load_dotenv
+
 from flatty.database import OfferActualizer
 from flatty.scrapers import NieruchomosciOnlineScraper
 
 load_dotenv()
+
 
 def get_offers_for_city(city: str) -> None:
     print(f"Getting offers for {city} city...")
@@ -18,5 +20,3 @@ def get_offers_for_city(city: str) -> None:
     print("Testing saving documents...")
 
     offer_actualizer.actualize_offers(data)
-
-

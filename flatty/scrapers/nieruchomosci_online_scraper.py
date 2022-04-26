@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 from bs4 import BeautifulSoup
+
 from flatty.models.appartment_offer import AppartmentOffer
 from flatty.scrapers.base_offer_scraper import BaseOfferScraper
 from flatty.serializers.appartment_offer_serializer import AppartmentOfferSerializer
