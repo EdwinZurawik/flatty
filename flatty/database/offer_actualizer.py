@@ -20,16 +20,31 @@ class OfferActualizer:
             {"offer_id": offer_serialized["offer_id"]}
         )
         if offer_from_db is None:
-            self._db_manager.save_document(offer_serialized)
+            self._create_new_offer(offer_serialized)
         else:
-            actual_prices = offer_from_db["prices_history"]
-            for price in offer_serialized["prices_history"]:
-                if all(
-                    actual["created_at"] != price["created_at"]
-                    for actual in actual_prices
-                ):
-                    actual_prices.append(price)
-            self._db_manager.update_document(
-                {"offer_id": offer_serialized["offer_id"]},
-                {"$set": {"prices_history": actual_prices}},
-            )
+            self._update_old_offer(offer_serialized, offer_from_db)
+
+    def _create_new_offer(self, offer_serialized: "dict[str, any]") -> None:
+        self._db_manager.save_document(offer_serialized)
+
+    def _update_old_offer(
+        self, offer_serialized: "dict[str, any]", offer_from_db: "dict[str, any]"
+    ) -> None:
+        updated_prices = offer_from_db["prices_history"] + self._get_new_prices(
+            offer_serialized["prices_history"], offer_from_db["updated_at"]
+        )
+
+        self._db_manager.update_document(
+            {"offer_id": offer_serialized["offer_id"]},
+            {
+                "$set": {
+                    "prices_history": updated_prices,
+                    "updated_at": offer_serialized["updated_at"],
+                }
+            },
+        )
+
+    def _get_new_prices(self, prices_history: "dict[str, any]", updated_at: str):
+        return list(
+            filter(lambda price: price["created_at"] > updated_at, prices_history)
+        )

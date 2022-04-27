@@ -20,7 +20,11 @@ class AppartmentOfferSchema(Schema):
     city = fields.String()
     url = fields.String()
     offer_id = fields.String()
+    has_balcony = fields.Boolean()
+    website = fields.String()
     prices_history = fields.List(fields.Nested(PriceSchema))
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()
     id = ObjectId(allow_none=True, data_key="_id")
 
     @post_load

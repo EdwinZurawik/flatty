@@ -1,6 +1,5 @@
 import re
 import time
-from datetime import datetime
 
 from bs4 import BeautifulSoup
 
@@ -12,6 +11,10 @@ __all__ = ["NieruchomosciOnlineScraper"]
 
 
 class NieruchomosciOnlineScraper(BaseOfferScraper):
+    def __init__(self):
+        super().__init__()
+        self.website = "Nieruchomości Online"
+
     def scrape_offers(self, city: str) -> "list[AppartmentOffer]":
         page_empty = False
         page_number = 1
@@ -42,6 +45,7 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
             base_data = {
                 "city": city,
                 "url": link,
+                "website": self.website,
             }
             offer_data = self.get_offer_data(self.get_page_soup(link))
             if offer_data:
@@ -52,6 +56,8 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
             AppartmentOfferSerializer.deserialize(appartment_data)
             for appartment_data in data
         ]
+        for index, offer in enumerate(offers):
+            print(f"{index + 1}. {offer}")
         return offers
 
     def get_offer_links_from_page(self, soup: BeautifulSoup) -> "list[str]":
@@ -61,11 +67,12 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
         area = soup.find(class_="info-area")
         price = soup.find(class_="info-primary-price")
         number_of_rooms = soup.select(
-            "#attributesTable div:nth-of-type(2) " "span:nth-of-type(2)"
+            "#attributesTable div:nth-of-type(2) span:nth-of-type(2)"
         )
-        floor = soup.select("#attributesTable div:first-of-type " "span:nth-of-type(2)")
+        floor = soup.select("#attributesTable div:first-of-type span:nth-of-type(2)")
         name = soup.find(class_="h1Title")
-        offer_id = soup.select("input[name='idData']")
+        offer_id = soup.select("#bottomForm input[name='idData']")
+        has_balcony = self.check_if_has_balcony(soup)
         data_list = [area, price, number_of_rooms, name, floor]
 
         if not all(data_list):
@@ -77,15 +84,21 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
 
         data = {
             "area": area,
-            "prices_history": [
-                {"created_at": datetime.now().isoformat(), "value": price}
-            ],
+            "prices_history": [{"value": price}],
             "number_of_rooms": int(number_of_rooms),
             "name": name.text,
             "floor": floor[0].text,
             "offer_id": offer_id[0].get("value"),
+            "has_balcony": has_balcony,
         }
         return data
+
+    def check_if_has_balcony(self, soup: BeautifulSoup):
+        additional_area = soup.find_all("strong", text="Powierzchnia dodatkowa:")
+        if additional_area:
+            additional_area_text = additional_area[0].findNext("span").text
+            return any([word in additional_area_text for word in ("balkon", "loggia")])
+        return False
 
     def clean_number_data(self, number: str) -> float:
         number = re.sub(r"\xa0", "", number)
