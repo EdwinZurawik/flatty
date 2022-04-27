@@ -2,7 +2,7 @@ import argparse
 
 from dotenv import load_dotenv
 
-from flatty import get_offers_for_city
+from flatty import get_offers_for_city, update_offers
 
 __all__ = ["get_offers_for_city"]
 
@@ -17,7 +17,8 @@ load_dotenv()
 
 def main():
     print("Starting program...")
-    get_offers_for_city(args.city)
+    offers_list = get_offers_for_city(args.city)
+    update_offers(offers_list)
 
 
 if __name__ == "__main__":

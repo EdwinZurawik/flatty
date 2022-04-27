@@ -8,7 +8,7 @@ __all__ = ["BaseOfferScraper"]
 
 class BaseOfferScraper:
     def __init__(self):
-        pass
+        self.website = None
 
     def scrape_offers(self):
         return NotImplemented

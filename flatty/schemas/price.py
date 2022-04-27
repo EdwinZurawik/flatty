@@ -13,6 +13,7 @@ class PriceSchema(Schema):
     __model__ = Price
     created_at = fields.DateTime()
     value = fields.Float()
+    currency = fields.String()
 
     @post_load
     def make_object(self, data, **kwargs):
