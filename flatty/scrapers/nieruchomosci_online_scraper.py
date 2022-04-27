@@ -56,8 +56,6 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
             AppartmentOfferSerializer.deserialize(appartment_data)
             for appartment_data in data
         ]
-        for index, offer in enumerate(offers):
-            print(f"{index + 1}. {offer}")
         return offers
 
     def get_offer_links_from_page(self, soup: BeautifulSoup) -> "list[str]":
