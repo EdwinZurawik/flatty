@@ -101,7 +101,7 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
     def clean_number_data(self, number: str) -> float:
         number = re.sub(r"\xa0", "", number)
         number = re.sub(r",", ".", number)
-        number_regex = re.compile(r"[0-9.]*")
+        number_regex = re.compile(r"[0-9.]+")
         match_data = number_regex.match(number)
         if match_data:
             return float(match_data.group())
