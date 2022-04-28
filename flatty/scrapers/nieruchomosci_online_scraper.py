@@ -76,9 +76,13 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
         if not all(data_list):
             # print(f"{name.text} - data missing...")
             return None
-        area = self.clean_number_data(area.text)
-        price = self.clean_number_data(price.text)
-        number_of_rooms = self.clean_number_data(number_of_rooms[0].text)
+        try:
+            area = self.clean_number_data(area.text)
+            price = self.clean_number_data(price.text)
+            number_of_rooms = self.clean_number_data(number_of_rooms[0].text)
+        except ValueError as e:
+            print(f"Error: {e}")
+            return None
 
         data = {
             "area": area,
@@ -105,6 +109,7 @@ class NieruchomosciOnlineScraper(BaseOfferScraper):
         match_data = number_regex.match(number)
         if match_data:
             return float(match_data.group())
+        print(number, match_data)
         raise ValueError(
             f"Incorrect value. Expected {type(str)}, but got"
             f"{type(match_data)} instead!"
